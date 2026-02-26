@@ -1,73 +1,133 @@
-# Welcome to your Lovable project
+# **IoT Monitoring Platform**
+## **ESP32 + Flask + PostgreSQL + React (Em Desenvolvimento)**
+________________________________________
+### **1. Visão Geral**
+Este projeto implementa uma arquitetura completa de monitoramento IoT, integrando hardware embarcado, backend em Python, banco de dados e uma interface web para visualização de dados.
+O sistema coleta dados físicos por meio de sensores conectados a um ESP32, envia essas informações para um servidor backend desenvolvido em Python, armazena os registros em banco de dados e disponibiliza os dados organizados em uma aplicação web.
+O objetivo é demonstrar, de forma prática, a integração entre dispositivos físicos e aplicações web modernas, seguindo uma arquitetura organizada e escalável.
 
-## Project info
+________________________________________
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+### **2. Arquitetura do Sistema**
+- A arquitetura segue o seguinte fluxo:
 
-## How can I edit this code?
+ESP32 --> Envio de dados via Wi-Fi (HTTP / JSON) --> Backend em Python (API REST) --> Banco de Dados --> Aplicação Web (Dashboard)
 
-There are several ways of editing your application.
+________________________________________
 
-**Use Lovable**
+### **Responsabilidade de cada camada**
+**ESP32**
+- Coleta dados dos sensores
+- Estrutura as informações em formato JSON
+- Envia requisições HTTP ao backend
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+**Backend (Python)**
+- Recebe dados do dispositivo
+- Realiza validação das informações
+- Armazena registros no banco de dados
+- Disponibiliza endpoints para consulta
 
-Changes made via Lovable will be committed automatically to this repo.
+**Banco de Dados**
+- Armazena histórico de leituras
+- Permite consultas por período
+- Organiza dados para futuras análises
 
-**Use your preferred IDE**
+**Frontend Web**
+- Consome a API do backend
+- Exibe dados em tempo real
+- Mostra status do sistema
+- Apresenta histórico de medições
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+________________________________________
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### **3. Problema Abordado**
+Sistemas que realizam apenas leitura local de sensores apresentam limitações como:
+- Ausência de histórico persistente
+- Falta de monitoramento remoto
+- Dados brutos sem validação
+- Dificuldade de análise comparativa
+Este projeto resolve essas limitações ao implementar:
+- Centralização de dados
+- Persistência estruturada
+- Separação de responsabilidades
+- Visualização organizada
+________________________________________
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
+### **4. Tecnologias Utilizadas**
+Hardware
+- ESP32
+- Sensores ambientais (exemplo: temperatura e umidade)
+Backend
+- Python
+- Framework para API REST (Flask)
+Banco de Dados
+- PostgreSQL
+- Estrutura para armazenamento de leituras
+Frontend
 - React
-- shadcn-ui
-- Tailwind CSS
+- TypeScript
+- TailwindCSS
+________________________________________
 
-## How can I deploy this project?
+### **5. Funcionalidades Implementadas**
+- Coleta automática de dados via ESP32
+- Envio periódico para o backend
+- Armazenamento em banco de dados
+- Consulta de histórico de medições
+- Exibição em dashboard web
+- Indicadores de status do sistema
+- Estrutura preparada para expansão
+________________________________________
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### **6. Estrutura do Projeto**
+/esp32
+→ Código para leitura dos sensores e envio via HTTP (JSON)
 
-## Can I connect a custom domain to my Lovable project?
+/backend
+→ API REST desenvolvida com Flask
+→ Endpoints para recebimento (POST) e consulta (GET)
 
-Yes, you can!
+/database
+→ Script de criação de tabelas e estrutura do PostgreSQL
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+/web
+→ Aplicação React + TypeScript para visualização dos dados
+________________________________________
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### **7. Conceitos Aplicados**
+- Arquitetura em camadas
+- Separação de responsabilidades
+- Comunicação HTTP entre dispositivo e servidor
+- Estruturação de API REST
+- Persistência de dados
+- Integração entre hardware e software
+- Organização de projeto escalável
+________________________________________
+
+### **8. Possíveis Evoluções**
+- Implementação de autenticação JWT
+- Sistema de alertas automáticos
+- Dashboard com gráficos analíticos
+- Controle de múltiplos dispositivos
+- Deploy em ambiente de nuvem
+-	Monitoramento em tempo real via WebSocket
+________________________________________
+
+### **9. Aplicabilidade**
+A arquitetura proposta pode ser aplicada em:
+- Monitoramento agrícola
+- Controle ambiental
+- Automação residencial
+- Monitoramento industrial
+- Projetos acadêmicos
+________________________________________
+
+### **10. Conclusão**
+Este projeto demonstra a construção de uma arquitetura IoT completa:
+- Dispositivo embarcado
+- Backend em Python
+- Banco de dados
+- Interface web moderna
+
+## **A arquitetura adotada segue princípios de organização e escalabilidade, permitindo expansão futura e aplicação em cenários reais.**
+
