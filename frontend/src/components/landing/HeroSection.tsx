@@ -1,110 +1,122 @@
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Wifi, BarChart3, Shield, ArrowUpRight, LucideIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3, Shield, Wifi } from "lucide-react";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-const HeroSection = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+interface Feature {
+  icon: LucideIcon;
+  label: string;
+}
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const resize = () => { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const particles: { x: number; y: number; vx: number; vy: number; size: number; opacity: number }[] = [];
-    for (let i = 0; i < 60; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        size: Math.random() * 3 + 1,
-        opacity: Math.random() * 0.5 + 0.1,
-      });
-    }
-
-    let animId: number;
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(142, 60%, 45%, ${p.opacity})`;
-        ctx.fill();
-      });
-      // lines
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const d = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-          if (d < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `hsla(142, 60%, 45%, ${0.1 * (1 - d / 120)})`;
-            ctx.stroke();
-          }
-        }
-      }
-      animId = requestAnimationFrame(animate);
-    };
-    animate();
-    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
-  }, []);
+const HeroSection: React.FC = () => {
+  const features: Feature[] = [
+    { icon: BarChart3, label: "Dados em Tempo Real" },
+    { icon: Shield, label: "Proteção de Safra" },
+    { icon: Wifi, label: "Sensores IoT" },
+  ];
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#05070a]">
+      {/* --- BACKGROUND LAYER --- */}
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-40 lg:opacity-50 scale-105"
+        >
+          <source src="/assets/video_fundo_heroSection.mp4" type="video/mp4" />
+        </video>
+        
+        {/* Gradients de Profundidade - Criam o efeito "foco central" da imagem */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#05070a] via-transparent to-[#05070a]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#05070a_90%)]" />
+      </div>
 
-      <div className="container mx-auto px-4 relative z-10 pt-20">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
-              <Wifi className="w-4 h-4" /> Monitoramento IoT em Tempo Real
-            </div>
+      {/* --- CONTENT LAYER --- */}
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-5xl mx-auto text-center">
+          
+          {/* Status Badge - Efeito Neon Suave */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }} 
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-emerald-500/5 border border-emerald-500/20 backdrop-blur-xl text-emerald-400 text-xs md:text-sm font-bold tracking-widest uppercase mb-10 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            Monitoramento IoT Ativo
           </motion.div>
 
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.1 }} className="text-4xl md:text-6xl lg:text-7xl font-bold font-display leading-tight mb-6">
-            Proteja seus grãos com{" "}
-            <span className="text-gradient-agro">inteligência</span>
+          {/* Título - Tipografia 'Display' com gradiente metálico */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }} 
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.95]"
+          >
+            A inteligência que <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500">
+              protege sua safra
+            </span>
           </motion.h1>
 
-          <motion.p initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Plataforma completa de monitoramento IoT para o agronegócio. Sensores inteligentes, alertas em tempo real e relatórios detalhados para maximizar a qualidade dos seus grãos.
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="text-slate-300/80 text-lg md:text-2xl max-w-3xl mx-auto mb-12 font-light leading-relaxed"
+          >
+            Conecte seu campo ao futuro. Monitore umidade, temperatura e qualidade 
+            em tempo real com a plataforma IoT mais avançada do mercado.
           </motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" asChild className="gradient-agro border-0 text-lg px-8 py-6 hover-lift">
-              <Link to="/register">Comece Agora <ArrowRight className="ml-2 w-5 h-5" /></Link>
+          {/* CTAs - Botões com Glassmorphism Elevado */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          >
+            <Button asChild className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-10 py-8 text-xl rounded-2xl shadow-[0_10px_40px_rgba(16,185,129,0.3)] transition-all hover:scale-105 active:scale-95 border-0">
+              <Link to="/register" className="flex items-center gap-2">
+                Começar Agora <ArrowUpRight className="w-6 h-6" />
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="text-lg px-8 py-6 hover-lift">
-              <a href="#como-funciona">Ver Demonstração</a>
+            
+            <Button variant="outline" className="bg-white/5 border-white/10 text-white px-10 py-8 text-xl rounded-2xl backdrop-blur-md hover:bg-white/10 transition-all border shadow-2xl">
+              <a href="#demo">Ver Demonstração</a>
             </Button>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }} className="grid grid-cols-3 gap-6 mt-16 max-w-lg mx-auto">
-            {[
-              { icon: BarChart3, label: "Dados em tempo real" },
-              { icon: Shield, label: "Alertas inteligentes" },
-              { icon: Wifi, label: "Sensores IoT" },
-            ].map((item, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 text-muted-foreground">
-                <item.icon className="w-6 h-6 text-primary" />
-                <span className="text-xs font-medium">{item.label}</span>
+          {/* Bottom Features - Cards Minimalistas */}
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto border-t border-white/5 pt-12"
+          >
+            {features.map((item, i) => (
+              <div key={i} className="flex flex-col items-center gap-4 group cursor-default">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/10 transition-all duration-500">
+                  <item.icon className="w-7 h-7 text-emerald-400" />
+                </div>
+                <span className="text-slate-400 group-hover:text-white text-sm font-semibold tracking-wide transition-colors uppercase">
+                  {item.label}
+                </span>
               </div>
             ))}
           </motion.div>
+
         </div>
       </div>
+
+      {/* Fade inferior suave para a próxima seção */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#05070a] to-transparent z-20" />
     </section>
   );
 };
