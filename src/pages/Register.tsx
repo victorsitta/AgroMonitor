@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Sprout, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { supabase } from "@/utils/supabase";
+
 
 const Register = () => {
 
@@ -41,29 +43,27 @@ const Register = () => {
 
     try {
 
-      await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password
-        })
+      const { error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password
       });
+
+      if (error) {
+        throw error;
+      }
 
       toast({
         title: "Conta criada!",
-        description: "Cadastro realizado com sucesso."
+        description: "Verifique seu email para confirmar."
       });
 
       navigate("/login");
 
-    } catch (error) {
+    } catch (error: any) {
 
       toast({
         title: "Erro",
-        description: "Erro ao criar usuário."
+        description: error.message
       });
 
     } finally {
