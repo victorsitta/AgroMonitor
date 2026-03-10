@@ -1,5 +1,5 @@
 # **IoT Monitoring Platform**
-## **ESP32 + Flask + PostgreSQL + React (Em Desenvolvimento)**
+## **ESP32 + Node.js + PostgreSQL + React (Em Desenvolvimento)**
 ________________________________________
 ### **1. Visão Geral**
 Este projeto implementa uma arquitetura completa de monitoramento IoT, integrando hardware embarcado, backend em Node.js, banco de dados e uma interface web para visualização de dados.
