@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Sprout, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import supabase from "../../utils/supabase";
 
 const Register = () => {
-
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -21,14 +21,15 @@ const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Função para atualizar campos do form
   const update = (key: string, value: string) =>
     setForm((f) => ({ ...f, [key]: value }));
 
-
+  // Função de envio do formulário
   const handleSubmit = async (e: React.FormEvent) => {
-
     e.preventDefault();
 
+    // Validação de senha
     if (form.password !== form.confirmPassword) {
       toast({
         title: "Erro",
@@ -40,37 +41,36 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-
-      await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password
-        })
+      // Cadastro no Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password
       });
 
+      if (error) {
+        toast({
+          title: "Erro",
+          description: error.message
+        });
+        return;
+      }
+
+      // Sucesso
       toast({
         title: "Conta criada!",
-        description: "Cadastro realizado com sucesso."
+        description: "Cadastro realizado com sucesso. Verifique seu email para confirmar."
       });
 
       navigate("/login");
-
-    } catch (error) {
-
+    } catch (err) {
       toast({
         title: "Erro",
         description: "Erro ao criar usuário."
       });
-
     } finally {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#010a08]">

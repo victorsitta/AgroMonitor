@@ -14,6 +14,8 @@ import AlertsPage from "./pages/AlertsPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -25,9 +27,24 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route path="/login" element={
+            <AuthProvider>
+              <Login />
+            </AuthProvider>
+            } />
+          <Route path="/register" element={
+            <AuthProvider>
+              <Register />
+            </AuthProvider>
+            } />
+
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+            }>
+
+
             <Route index element={<DashboardHome />} />
             <Route path="sensors" element={<SensorsPage />} />
             <Route path="grains" element={<GrainsPage />} />
