@@ -1,9 +1,10 @@
-# **IoT Monitoring Platform**
-## **ESP32 + Flask + PostgreSQL + React (Em Desenvolvimento)**
+# **AgroMonitor**
+## **IoT Monitoring Platform**
+## **ESP32 + Node.js + PostgreSQL + React (Em Desenvolvimento)**
 ________________________________________
 ### **1. Visão Geral**
-Este projeto implementa uma arquitetura completa de monitoramento IoT, integrando hardware embarcado, backend em Python, banco de dados e uma interface web para visualização de dados.
-O sistema coleta dados físicos por meio de sensores conectados a um ESP32, envia essas informações para um servidor backend desenvolvido em Python, armazena os registros em banco de dados e disponibiliza os dados organizados em uma aplicação web.
+Este projeto implementa uma arquitetura completa de monitoramento IoT, integrando hardware embarcado, backend em Node.js, banco de dados e uma interface web para visualização de dados.
+O sistema coleta dados físicos por meio de sensores conectados a um ESP32, envia essas informações para um servidor backend desenvolvido em Node.js, armazena os registros em banco de dados e disponibiliza os dados organizados em uma aplicação web.
 O objetivo é demonstrar, de forma prática, a integração entre dispositivos físicos e aplicações web modernas, seguindo uma arquitetura organizada e escalável.
 
 ________________________________________
@@ -11,7 +12,7 @@ ________________________________________
 ### **2. Arquitetura do Sistema**
 - A arquitetura segue o seguinte fluxo:
 
-ESP32 --> Envio de dados via Wi-Fi (HTTP / JSON) --> Backend em Python (API REST) --> Banco de Dados --> Aplicação Web (Dashboard)
+ESP32 --> Envio de dados via Wi-Fi (HTTP / JSON) --> Backend em Node.js (API REST) --> Banco de Dados --> Aplicação Web (Dashboard)
 
 ________________________________________
 
@@ -21,7 +22,7 @@ ________________________________________
 - Estrutura as informações em formato JSON
 - Envia requisições HTTP ao backend
 
-**Backend (Python)**
+**Backend (Node.js)**
 - Recebe dados do dispositivo
 - Realiza validação das informações
 - Armazena registros no banco de dados
@@ -46,6 +47,7 @@ Sistemas que realizam apenas leitura local de sensores apresentam limitações c
 - Falta de monitoramento remoto
 - Dados brutos sem validação
 - Dificuldade de análise comparativa
+
 Este projeto resolve essas limitações ao implementar:
 - Centralização de dados
 - Persistência estruturada
@@ -55,11 +57,11 @@ ________________________________________
 
 ### **4. Tecnologias Utilizadas**
 Hardware
-- ESP32
+- ESP32 (C++)
 - Sensores ambientais (exemplo: temperatura e umidade)
 Backend
-- Python
-- Framework para API REST (Flask)
+- Node.js
+- Framework para API REST (Express)
 Banco de Dados
 - PostgreSQL
 - Estrutura para armazenamento de leituras
@@ -84,7 +86,7 @@ ________________________________________
 → Código para leitura dos sensores e envio via HTTP (JSON)
 
 /backend
-→ API REST desenvolvida com Flask
+→ API REST desenvolvida com Node.js + Express
 → Endpoints para recebimento (POST) e consulta (GET)
 
 /database
@@ -125,7 +127,7 @@ ________________________________________
 ### **10. Conclusão**
 Este projeto demonstra a construção de uma arquitetura IoT completa:
 - Dispositivo embarcado
-- Backend em Python
+- Backend em Node.js
 - Banco de dados
 - Interface web moderna
 
