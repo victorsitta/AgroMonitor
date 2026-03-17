@@ -3,31 +3,75 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sprout, Eye, EyeOff, Satellite, Wind, Droplets, ArrowRight, ShieldCheck } from "lucide-react";
+import { Sprout, Eye, EyeOff, Satellite, Wind, Droplets, ArrowRight, ShieldCheck, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { supabase } from "@/utils/supabase";
+
+export type User = {
+  email?: string;
+  pass?: string;
+}
 
 const Login = () => {
   const [showPass, setShowPass] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [tentativa, setTentativa] = useState(0);
+  const [user, setUser] = useState<User>();
+  const [users, setUsers] = useState<User[]>([]);
+
+
+
+  async function checkedLogin(e: React.FormEvent) {
     e.preventDefault();
+
+    if (tentativa >= 3) {
+      toast({
+        variant: "destructive",
+        title: "Erro",
+        description: "Volte mais tarde"
+      });
+      return;
+    }
+
+    if (!user?.email || !user.pass) {
+      toast({
+        title: "Erro",
+        description: "Email e senha são obrigatórios"
+      });
+      return;
+    }
+    setIsLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: user.pass
+    });
+
+    if (error) {
+      setTentativa(tentativa + 1);
+      alert(error.message);
+      setIsLoading(false);
+      return;
+    }
+
     toast({ title: "Sincronizando...", description: "Acesso via Satélite autorizado." });
-    setTimeout(() => navigate("/dashboard"), 1000);
-  };
+    navigate('/dashboard', { replace: true });
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center font-sans relative overflow-hidden bg-[#010a08]">
-      
+
       {/* BACKGROUND DINÂMICO - Simula o campo ao amanhecer */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-950 via-[#010a08] to-emerald-900 opacity-80" />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2000')] bg-cover bg-center mix-blend-overlay opacity-40" />
-        
+
         {/* Luzes de satélite passando */}
-        <motion.div 
+        <motion.div
           animate={{ x: ['-100%', '200%'], y: ['-100%', '200%'] }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
           className="absolute w-[500px] h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent rotate-45"
@@ -35,10 +79,10 @@ const Login = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-[1200px] grid lg:grid-cols-12 gap-8 p-6">
-        
+
         {/* WIDGETS DE STATUS (HUD) - Só aparecem no Desktop */}
         <div className="hidden lg:flex lg:col-span-7 flex-col justify-center space-y-8">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-2"
@@ -48,7 +92,7 @@ const Login = () => {
               <span className="text-xs font-bold uppercase tracking-[0.4em]">Intelligence Division</span>
             </div>
             <h1 className="text-7xl font-black text-white leading-none tracking-tighter">
-              PRECISÃO <br /> 
+              PRECISÃO <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">NO CAMPO.</span>
             </h1>
           </motion.div>
@@ -60,7 +104,7 @@ const Login = () => {
               { icon: <Droplets className="w-4 h-4" />, label: "Umidade", val: "68%", color: "border-emerald-500/30" },
               { icon: <Satellite className="w-4 h-4" />, label: "Signal", val: "Strong", color: "border-emerald-500/30" },
             ].map((stat, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -76,13 +120,13 @@ const Login = () => {
         </div>
 
         {/* LOGIN FORM - O "Glass Card" */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="lg:col-span-5"
         >
           <div className="bg-[#051510]/80 backdrop-blur-2xl p-8 md:p-12 rounded-[48px] border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.4)] relative">
-            
+
             {/* Detalhe de Design: Glow no topo */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
 
@@ -96,12 +140,17 @@ const Login = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8">
+            <form onSubmit={checkedLogin} className="space-y-8">
               <div className="space-y-3">
                 <Label className="text-emerald-100/60 text-[10px] uppercase tracking-[0.2em] ml-1 font-bold">Identificação Biométrica/Email</Label>
-                <Input 
-                  type="email" 
-                  placeholder="operador@agro.com" 
+                <Input
+                  type="email"
+                  placeholder="operador@agro.com"
+                  onChange={(e) => setUser(
+                    {
+                      ...user, email: e.target.value
+                    }
+                  )}
                   className="h-14 bg-white/5 border-white/10 focus:border-emerald-500 focus:ring-emerald-500/20 text-white rounded-2xl px-6 transition-all"
                 />
               </div>
@@ -109,13 +158,18 @@ const Login = () => {
               <div className="space-y-3">
                 <Label className="text-emerald-100/60 text-[10px] uppercase tracking-[0.2em] ml-1 font-bold">Chave Criptográfica</Label>
                 <div className="relative">
-                  <Input 
-                    type={showPass ? "text" : "password"} 
-                    placeholder="••••••••" 
+                  <Input
+                    type={showPass ? "text" : "password"}
+                    placeholder="••••••••"
+                    onChange={(e) => setUser(
+                      {
+                        ...user, pass: e.target.value
+                      }
+                    )}
                     className="h-14 bg-white/5 border-white/10 focus:border-emerald-500 focus:ring-emerald-500/20 text-white rounded-2xl px-6 pr-14 transition-all"
                   />
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setShowPass(!showPass)}
                     className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-emerald-500"
                   >
@@ -124,11 +178,22 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button 
+              <Button
+                type="submit"
+                disabled={isLoading}
                 className="w-full h-16 bg-gradient-to-br from-emerald-400 to-emerald-700 hover:from-emerald-300 hover:to-emerald-600 text-emerald-950 font-black text-sm uppercase tracking-widest rounded-2xl shadow-[0_20px_40px_-12px_rgba(16,185,129,0.4)] transition-all active:scale-[0.98] flex items-center justify-center gap-3"
               >
-                Iniciar Sincronização
-                <ArrowRight className="w-5 h-5" />
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Sincronizando...
+                  </>
+                ) : (
+                  <>
+                    Iniciar Sincronização
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </Button>
             </form>
 

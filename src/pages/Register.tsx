@@ -8,14 +8,16 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { supabase } from "@/utils/supabase";
 
+export type User = {
+  email?: string;
+  pass?: string;
+}
+
 
 const Register = () => {
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
+  const [user, setUser] = useState<User>();
+  const [users, setUsers] = useState<User[]>([]);
 
   const [showPass, setShowPass] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,54 +25,38 @@ const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const update = (key: string, value: string) =>
-    setForm((f) => ({ ...f, [key]: value }));
-
-
-  const handleSubmit = async (e: React.FormEvent) => {
-
+  async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
+    console.log('handleRegister')
+    
+    if (user?.email && user?.pass) {
+      setIsLoading(true);
+      setUsers([...users, user]);
 
-    if (form.password !== form.confirmPassword) {
+      const { data, error } = await supabase.auth.signUp({
+        email: user.email,
+        password: user.pass
+      })
+
+      if (error){
+        alert("Deu ruim!")
+        setIsLoading(false);
+      } 
+      else {
+        toast({
+          title: "Conta criada!",
+          description: "Verifique seu email para confirmar."
+        });
+        navigate("/login");
+      }
+
+    } else {
       toast({
         title: "Erro",
         description: "As senhas não coincidem"
       });
-      return;
     }
-
-    setIsLoading(true);
-
-    try {
-
-      const { error } = await supabase.auth.signUp({
-        email: form.email,
-        password: form.password
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Conta criada!",
-        description: "Verifique seu email para confirmar."
-      });
-
-      navigate("/login");
-
-    } catch (error: any) {
-
-      toast({
-        title: "Erro",
-        description: error.message
-      });
-
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#010a08]">
@@ -88,7 +74,7 @@ const Register = () => {
           <h1 className="text-white text-xl font-bold">Criar Conta</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleRegister} className="space-y-6">
 
           {/* EMAIL */}
           <div className="space-y-2">
@@ -96,8 +82,11 @@ const Register = () => {
             <Input
               type="email"
               placeholder="email@agro.com"
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
+              onChange={(e) => setUser(
+                {
+                  ...user, email: e.target.value
+                }
+              )}
               className="bg-white/5 border-white/10 text-white"
             />
           </div>
@@ -111,8 +100,11 @@ const Register = () => {
               <Input
                 type={showPass ? "text" : "password"}
                 placeholder="********"
-                value={form.password}
-                onChange={(e) => update("password", e.target.value)}
+                onChange={(e) => setUser(
+                      {
+                        ...user, pass: e.target.value
+                      }
+                    )}
                 className="bg-white/5 border-white/10 text-white"
               />
 
@@ -126,18 +118,6 @@ const Register = () => {
             </div>
           </div>
 
-
-          {/* CONFIRM PASSWORD */}
-          <div className="space-y-2">
-            <Label className="text-white/70 text-xs">Confirmar Senha</Label>
-            <Input
-              type="password"
-              placeholder="********"
-              value={form.confirmPassword}
-              onChange={(e) => update("confirmPassword", e.target.value)}
-              className="bg-white/5 border-white/10 text-white"
-            />
-          </div>
 
 
           <Button
