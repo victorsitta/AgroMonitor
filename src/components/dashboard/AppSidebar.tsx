@@ -1,6 +1,6 @@
 import { LayoutDashboard, Cpu, Wheat, Bell, FileText, Settings, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +14,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -28,7 +29,12 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
-  const location = useLocation();
+  const { signOutUser } = useAuth();
+
+  const handleLogout = async () => {
+    await signOutUser();
+    navigate("/login");
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -60,7 +66,7 @@ export function AppSidebar() {
         <Button
           variant="ghost"
           className="w-full justify-start text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-          onClick={() => navigate("/")}
+          onClick={handleLogout}
         >
           <LogOut className="mr-2 h-4 w-4" />
           {!collapsed && "Sair"}

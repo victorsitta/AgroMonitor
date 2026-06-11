@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Sprout, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import supabase from "../../utils/supabase";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -15,47 +15,25 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signInUser } = useAuth();
 
   const update = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    if (!form.email || !form.password) {
-      toast({
-        title: "Erro",
-        description: "Preencha email e senha",
-        variant: "destructive",
-      });
+    const { error } = await signInUser(form.email, form.password);
+
+    if (error) {
+      toast({ title: "Erro no login", description: error, variant: "destructive" });
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: form.email,
-        password: form.password,
-      });
-
-      if (error) {
-        toast({ title: "Erro no login", description: error.message, variant: "destructive" });
-        return;
-      }
-
-      if (!data.user) {
-        toast({ title: "Erro", description: "Usuário não encontrado", variant: "destructive" });
-        return;
-      }
-
-      toast({ title: "Sucesso", description: "Login realizado com sucesso!" });
-
-      navigate("/dashboard");
-    } catch (err) {
-      toast({ title: "Erro", description: "Erro inesperado ao fazer login", variant: "destructive" });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({ title: "Sucesso", description: "Login realizado com sucesso!" });
+    navigate("/dashboard");
+    setIsLoading(false);
   };
 
   return (
@@ -73,7 +51,6 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-
           <div className="space-y-2">
             <Label className="text-white/70 text-xs">Email</Label>
             <Input
@@ -110,9 +87,7 @@ const Login = () => {
             disabled={isLoading}
             className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold flex items-center justify-center gap-2"
           >
-            {isLoading ? <Loader2 className="animate-spin" /> : <>
-              Entrar <ArrowRight size={18} />
-            </>}
+            {isLoading ? <Loader2 className="animate-spin" /> : <>Entrar <ArrowRight size={18} /></>}
           </Button>
 
           <p className="text-center text-sm text-white/40">
